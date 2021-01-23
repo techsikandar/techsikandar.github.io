@@ -2,7 +2,7 @@
 layout: post
 title:  "Just in time & Ahead of time Compilation"
 date:   2020-03-16 21:13:27 -0500
-categories: Ahead-of-time Just-in-time AOT JIT Java
+categories: java
 ---
 
 <h1>{{ "So what is Just in time?" }}</h1>
