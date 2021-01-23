@@ -9,7 +9,7 @@ categories: java
 
 GraalVM is a Java VM and JDK based on HotSpot / OpenJDK, implemented in Java. It offers a comprehensive ecosystem supporting a large set of languages (Java and other JVM-based languages, JavaScript, Ruby, Python, R, Web Assembly, C/C++ and other LLVM-based languages). With ahead-of-time compilation feature, it compiles applications into smaller self-contained native images which results in faster startup and lower memory footprint and we can still use it as Just-in-time compiler. The native-image tool also packages the SubstrateVM (SVM) into the image to provide functionalities like garbage collection. With these benefits. it’s definitely a top choice for containers, for applications running on cloud, specially Lambda.
 
-Read more about Ahead-of-time compilation in my article <a href="https://techsikandar.github.io/ahead-of-time/just-in-time/aot/jit/java/2020/03/17/just-in-time-vs-ahead-of-time.html" target="_blank">here</a>.
+Read more about Ahead-of-time compilation in my article <a href="https://techsikandar.github.io/java/2020/03/17/just-in-time-vs-ahead-of-time.html" target="_blank">here</a>.
 
 <h1>{{ "Some limitations" }}</h1>
 
