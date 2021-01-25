@@ -33,19 +33,19 @@ GraalVM is supported by many microservices frameworks like <a href="https://heli
 Download the GraalVM from <a href="https://github.com/graalvm/graalvm-ce-builds/releases" target="_blank">here</a>. Please make sure to download the correct version based upon your OS. I am using Linux and i downloaded `graalvm-ce-java11-linux-amd64–20.1.0.tar.gz`.
 
 {% highlight ruby %}
-wget https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/graalvm-ce-java11-linux-amd64-20.1.0.tar.gz
+$ wget https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/graalvm-ce-java11-linux-amd64-20.1.0.tar.gz
 {% endhighlight %}
 
 Now extract the tar file:
 
 {% highlight ruby %}
-tar -xvzf graalvm-ce-java11-linux-amd64-20.1.0.tar.gz
+$ tar -xvzf graalvm-ce-java11-linux-amd64-20.1.0.tar.gz
 {% endhighlight %}
 
 And then set paths:
 
 {% highlight ruby %}
-export PATH=<path to GraalVM>/bin:$PATH export JAVA_HOME=<path to GraalVM>
+$ export PATH=<path to GraalVM>/bin:$PATH export JAVA_HOME=<path to GraalVM>
 {% endhighlight %}
 
 You may run `java -version` to check if its pointing to right java version.
@@ -53,7 +53,9 @@ You may run `java -version` to check if its pointing to right java version.
 <b> {{ "Install Native Image" }} </b><br>
 
 {% highlight ruby %}
-gu install native-image yum install libstdc++-static yum install zlib-devel.x86_64
+$ gu install native-image 
+$ yum install libstdc++-static 
+$ yum install zlib-devel.x86_64
 {% endhighlight %}
 
 You may or may not require `zlib-devel.x86_64`. Refer to native image installation instructions <a href="https://www.graalvm.org/reference-manual/native-image/" target="_blank">here</a> for more details. Remember to install all prerequisites. You should be all set now.
