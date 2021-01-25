@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Just in time & Ahead of time Compilation"
-date:   2020-03-16 21:13:27 -0500
+date:   2019-03-16 21:13:27 -0500
 categories: java
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Lighter & Faster Java with GraalVM"
-date:   2020-06-04 21:13:27 -0500
+date:   2019-06-04 21:13:27 -0500
 categories: java
 ---
 
