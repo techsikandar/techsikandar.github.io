@@ -70,7 +70,7 @@ Before going to to storage drivers, let’s first understand docker image which 
 
 The storage driver controls how images and containers are stored. Docker supports different storage drivers but recommends `overlay2`. You can change it if you want. The recommendation is based upon the OS you are using.
 
-![ubuntu](/assets/docker/ubuntu.png)
+![ubuntu](/assets/docker/ubuntu.jpg)
 
 `overlay2` is a newer version of overlay which is a union file system which in turn employs `copy-on-write (COW)` strategy. It is this copy-on-write strategy which speeds up container creation. You should `keep this layer as thin as possible` and if you have write-intensive applications, then you should use docker volumes which are independent of container life cycle and can also be shared among containers.
 
