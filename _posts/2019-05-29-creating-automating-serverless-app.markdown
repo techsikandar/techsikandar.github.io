@@ -30,7 +30,7 @@ In this blog, i am creating a serverless application with AWS Lambda & API Gatew
 
 The AWS Serverless Application Model (SAM) is an open-source framework for building serverless applications. It’s a shorthand way to write lambda functions, APIs, databases, and event source mappings. AWS SAM is an extension of CloudFormation. So we can use the full suite of resources, intrinsic functions, and other template features that are available in AWS CloudFormation.
 
-<h1>{{ "Initializing & setting up the SAM project" }}</h1>
+<h1><b>{{ "Initializing & setting up the SAM project" }}</b></h1>
 
 Initializing the SAM project is straightforward. We just have to choose the project runtime and it’s name. For this blog, I am using Python and project name is profile-serverless. Create the project workspace. For example, `<dir>/profile-serverless/`.  Change to `<dir>/profile-serverless/` and then execute this command:
 
@@ -180,7 +180,8 @@ Continue to read if you want to automate this application with AWS CI/CD. Before
 Create a new folder `pipeline` inside `<dir>/profile-serverless` and run this command:
 
 {% highlight ruby %}
-<dir>/profile-serverless/pipeline> sam init --location gh:aws-samples/cookiecutter-aws-sam-pipeline
+<dir>/profile-serverless/pipeline> sam init \
+    --location gh:aws-samples/cookiecutter-aws-sam-pipeline
 {% endhighlight %}
 
 Choose AWS Pipeline project name: profile-serverless-pipeline
