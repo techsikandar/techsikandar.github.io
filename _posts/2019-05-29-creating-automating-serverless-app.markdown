@@ -5,6 +5,13 @@ date:   2019-05-29 21:13:27 -0500
 categories: aws serverless
 ---
 
+<style type="text/css">
+.center-image {
+    margin: 0 auto;
+    display: block;
+}
+</style>
+
 <h1>{{ "Introduction" }}</h1>
 
 ![sam](/assets/aws/serverless/sam.png){: .center-image }
@@ -149,16 +156,20 @@ Note: You need docker installed locally to test this.
 <h1>{{ "Packaging & Deployment" }}</h1>
 
 {% highlight ruby %}
-sam package --template-file template.yaml --output-template-file output-template.yaml --s3-bucket <S3_BUCKET>
+sam package --template-file template.yaml \
+    --output-template-file output-template.yaml 
+    --s3-bucket <S3_BUCKET>
 {% endhighlight %}
 
 Mention your S3 bucket name above.
 
 {% highlight ruby %}
-sam deploy --template-file output-template.yaml --stack-name ProfileLoader --capabilities CAPABILITY_IAM
+sam deploy --template-file output-template.yaml \
+    --stack-name ProfileLoader \
+    --capabilities CAPABILITY_IAM
 {% endhighlight %}
 
-Continue to read if you want to automate this application with AWS CI/CD. Before we proceed, copy the `profile-serverless` project to GitHub or CodeCommit. I am using GitHub.<br>
+Continue to read if you want to automate this application with AWS CI/CD. Before we proceed, copy the `profile-serverless` project to GitHub or CodeCommit. I am using GitHub.<br><br>
 
 ![cicd](/assets/aws/serverless/cicd.png){: .center-image }
 
