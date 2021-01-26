@@ -35,7 +35,7 @@ Initializes a serverless application with an AWS SAM template. The template prov
 
 <h1>{{ "Create AWS serverless profile project" }}</h1>
 
-<b>Configure your profile data (profile.json)</b>
+<b>Configure your profile data</b><br>
 Configure the `profile.json` based upon your own personal profile. Refer the simple profile below:
 
 {% highlight ruby %}
@@ -157,3 +157,70 @@ Mention your S3 bucket name above.
 {% highlight ruby %}
 sam deploy --template-file output-template.yaml --stack-name ProfileLoader --capabilities CAPABILITY_IAM
 {% endhighlight %}
+
+Continue to read if you want to automate this application with AWS CI/CD.
+
+![cicd](/assets/aws/serverless/cicd.png)
+
+Before we proceed, copy the `profile-serverless` project to GitHub or CodeCommit. I am using GitHub.
+
+<h1>{{ "Setup CI/CD for serverless profile application with AWS Pipeline" }}</h1>
+
+<b>Create AWS Pipeline</b>
+
+Create a new folder `pipeline` inside `<directory>/profile-serverless` and run this command:
+
+{% highlight ruby %}
+<directory>/profile-serverless/pipeline> sam init --location gh:aws-samples/cookiecutter-aws-sam-pipeline
+{% endhighlight %}
+
+Choose AWS Pipeline project name: profile-serverless-pipeline
+Choose your GitHub / CodeCommit repository
+
+It will then create a set of necessary artifacts required for this automation. Now move the `buildspec.yaml` from pipeline folder to the root of the project. It should look like this:
+
+{% highlight ruby %}
+<directory>/profile-serverless/buildspec.yaml
+{% endhighlight %}
+
+<b>Configuration</b>
+
+AWS Pipeline (actually AWS CodeBuild) needs access to the GitHub repository so that it can build the project. It needs to know the username, repository and the access token. We are going to configure these properties in AWS Systems Manager Parameter Store. For more information, Refer to https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html
+
+{% highlight ruby %}
+aws ssm put-parameter --name "/service/profile-serverless-pipeline/github/user" \
+    --description "Github Username for Cloudformation Stack profile-serverless-pipeline" \
+    --type "String" --value "<YOUR_USER_NAME>"
+{% endhighlight %}
+
+{% highlight ruby %}
+aws ssm put-parameter --name "/service/profile-serverless-pipeline/github/repo" \
+    --description "Github Repository name for Cloudformation Stack profile-serverless-pipeline" \
+    --type "String" --value "profile-serverless"
+{% endhighlight %}
+
+{% highlight ruby %}
+aws ssm put-parameter --name "/service/profile-serverless-pipeline/github/token" \
+    --description "Github Token for Cloudformation Stack profile-serverless-pipeline-pipeline" \
+    --type "String" --value "<GITHuB_TOKEN>"
+{% endhighlight %}
+
+Refer to https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line to find out how to get the developer access token.
+
+<h1>{{ "Create CloudFormation stack" }}</h1>
+
+{% highlight ruby %}
+
+aws cloudformation create-stack --stack-name profile-serverless-pipeline \
+    --template-body file://pipeline/pipeline.yaml \
+    --capabilities CAPABILITY_NAMED_IAM
+
+{% endhighlight %}
+
+`pipeline.yaml` contains the necessary services and roles required to create the stack. It’s a one time job. This also has a manual approval phase. So, if your build process is taking too long, it’s probably waiting for the approval. In this case, go to Code Pipeline console and approve the step. Plus, you may want to delete the unnecessary environments. You can always refer to the working source code here at GitHub.
+
+<h1>{{ "Test the Pipeline" }}</h1>
+
+Make changes to the `profile-serverless` project and do git commit & git push. This will trigger the build process. Verify your changes by hitting the API Gateway endpoint.
+
+Continue to read if you want to host your personal profile on S3 bucket with Angular front-end.
