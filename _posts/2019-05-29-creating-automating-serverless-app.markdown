@@ -7,7 +7,7 @@ categories: aws serverless
 
 <h1>{{ "Introduction" }}</h1>
 
-![sam](/assets/aws/serverless/sam.png)
+![sam](/assets/aws/serverless/sam.png){: .center-image }
 
 In this blog, i am creating a serverless application with AWS Lambda & API Gateway using SAM. The API will return the personal profile data as JSON which will be consumed by an angular frontend to develop a single page application and host that on S3.
 
@@ -25,10 +25,10 @@ The AWS Serverless Application Model (SAM) is an open-source framework for build
 
 <h1>{{ "Initializing & setting up the SAM project" }}</h1>
 
-Initializing the SAM project is straightforward. We just have to choose the project runtime and it’s name. For this blog, I am using Python and project name is profile-serverless. Create the project workspace. For example, `<directory>/profile-serverless/`.  Change to `<directory>/profile-serverless/` and then execute this command:
+Initializing the SAM project is straightforward. We just have to choose the project runtime and it’s name. For this blog, I am using Python and project name is profile-serverless. Create the project workspace. For example, `<dir>/profile-serverless/`.  Change to `<dir>/profile-serverless/` and then execute this command:
 
 {% highlight ruby %}
-<directory>/profile-serverless> sam init --runtime python3.8 --name profile-serverless
+<dir>/profile-serverless> sam init --runtime python3.8 --name profile-serverless
 {% endhighlight %}
 
 Initializes a serverless application with an AWS SAM template. The template provides a folder structure for your Lambda functions, and is connected to an event source such as APIs, S3 buckets, or DynamoDB tables. This application includes everything we need to get started and to eventually extend it into a production-scale application. You can open this project in any editor of your choice. I used VS Code.
@@ -74,11 +74,11 @@ Configure the `profile.json` based upon your own personal profile. Refer the sim
 }
 {% endhighlight %}
 
-Store this `profile.json` in `<directory>/profile-serverless/profile_loader`.
+Store this `profile.json` in `<dir>/profile-serverless/profile_loader`.
 
 <b>Profile loader Lambda function</b>
 
-Create `profileloader.py` in `<directory>/profile-serverless/profile_loader`. This simple python program will basically do two simple things. One, read the profile, second, return it as the response.
+Create `profileloader.py` in `<dir>/profile-serverless/profile_loader`. This simple python program will basically do two simple things. One, read the profile, second, return it as the response.
 
 {% highlight ruby %}
 import json
@@ -158,20 +158,18 @@ Mention your S3 bucket name above.
 sam deploy --template-file output-template.yaml --stack-name ProfileLoader --capabilities CAPABILITY_IAM
 {% endhighlight %}
 
-Continue to read if you want to automate this application with AWS CI/CD.
+Continue to read if you want to automate this application with AWS CI/CD. Before we proceed, copy the `profile-serverless` project to GitHub or CodeCommit. I am using GitHub.<br>
 
-![cicd](/assets/aws/serverless/cicd.png)
+![cicd](/assets/aws/serverless/cicd.png){: .center-image }
 
-Before we proceed, copy the `profile-serverless` project to GitHub or CodeCommit. I am using GitHub.
-
-<h1>{{ "Setup CI/CD for serverless profile application with AWS Pipeline" }}</h1>
+<h1><b>{{ "Setup CI/CD for serverless profile application with AWS Pipeline" }}</b></h1>
 
 <b>Create AWS Pipeline</b>
 
-Create a new folder `pipeline` inside `<directory>/profile-serverless` and run this command:
+Create a new folder `pipeline` inside `<dir>/profile-serverless` and run this command:
 
 {% highlight ruby %}
-<directory>/profile-serverless/pipeline> sam init --location gh:aws-samples/cookiecutter-aws-sam-pipeline
+<dir>/profile-serverless/pipeline> sam init --location gh:aws-samples/cookiecutter-aws-sam-pipeline
 {% endhighlight %}
 
 Choose AWS Pipeline project name: profile-serverless-pipeline
@@ -180,7 +178,7 @@ Choose your GitHub / CodeCommit repository
 It will then create a set of necessary artifacts required for this automation. Now move the `buildspec.yaml` from pipeline folder to the root of the project. It should look like this:
 
 {% highlight ruby %}
-<directory>/profile-serverless/buildspec.yaml
+<dir>/profile-serverless/buildspec.yaml
 {% endhighlight %}
 
 <b>Configuration</b>
@@ -189,19 +187,19 @@ AWS Pipeline (actually AWS CodeBuild) needs access to the GitHub repository so t
 
 {% highlight ruby %}
 aws ssm put-parameter --name "/service/profile-serverless-pipeline/github/user" \
-    --description "Github Username for Cloudformation Stack profile-serverless-pipeline" \
+    --description "Github Username for CF Stack profile-serverless-pipeline" \
     --type "String" --value "<YOUR_USER_NAME>"
 {% endhighlight %}
 
 {% highlight ruby %}
 aws ssm put-parameter --name "/service/profile-serverless-pipeline/github/repo" \
-    --description "Github Repository name for Cloudformation Stack profile-serverless-pipeline" \
+    --description "Github Repository name for CF Stack profile-serverless-pipeline" \
     --type "String" --value "profile-serverless"
 {% endhighlight %}
 
 {% highlight ruby %}
 aws ssm put-parameter --name "/service/profile-serverless-pipeline/github/token" \
-    --description "Github Token for Cloudformation Stack profile-serverless-pipeline-pipeline" \
+    --description "Github Token for CF Stack profile-serverless-pipeline-pipeline" \
     --type "String" --value "<GITHuB_TOKEN>"
 {% endhighlight %}
 
@@ -223,4 +221,4 @@ aws cloudformation create-stack --stack-name profile-serverless-pipeline \
 
 Make changes to the `profile-serverless` project and do git commit & git push. This will trigger the build process. Verify your changes by hitting the API Gateway endpoint.
 
-Continue to read if you want to host your personal profile on S3 bucket with Angular front-end.
+Continue to read if you want to host your personal profile on S3 bucket with Angular front-end. <br>
