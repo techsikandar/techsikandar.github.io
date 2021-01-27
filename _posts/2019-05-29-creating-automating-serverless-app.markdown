@@ -18,6 +18,8 @@ categories: aws serverless
 
 In this blog, i am creating a serverless application with AWS Lambda & API Gateway using SAM. The API will return the personal profile data as JSON which will be consumed by an angular frontend to develop a single page application and host that on S3.
 
+Project source code: <a href="https://github.com/techsikandar/profile-serverless">profile-serverless</a>, <a href="https://github.com/techsikandar/profile-serverless-angular">profile-serverless-angular</a>
+
 <h1>{{ "Intended Audience" }}</h1>
 
 <ul>
@@ -169,7 +171,8 @@ sam deploy --template-file output-template.yaml \
     --capabilities CAPABILITY_IAM
 {% endhighlight %}
 
-Continue to read if you want to automate this application with AWS CI/CD. Before we proceed, copy the `profile-serverless` project to GitHub or CodeCommit. I am using GitHub.<br><br>
+
+<br><br>Continue to read if you want to automate this application with AWS CI/CD. Before we proceed, copy the `profile-serverless` project to GitHub or CodeCommit. I am using GitHub.
 
 ![cicd](/assets/aws/serverless/cicd.png){: .center-image }
 
@@ -239,7 +242,7 @@ Lets configure the project to create our own single-page serverless application 
 
 ![cicd](/assets/aws/serverless/apig.png){: .center-image }
 
-<h1>{{ "Setup & Configure the Angular application" }}</h1>
+<h1><b>{{ "Setup & Configure the Angular application" }}</b></h1>
 
 Checkout the source code from <a href="https://github.com/techsikandar/profile-serverless-angular">here</a>. Open the project in editor your choice. I used VS Code.
 
@@ -252,13 +255,20 @@ Configure the API Gateway endpoint in ProfileService.ts file. Get the source cod
 Add these CORS headers in profileloader.py lambda. Refer to the source code <a href="https://github.com/techsikandar/profile-serverless">here</a>.
 
 {% highlight ruby %}
-'headers': { "Access-Control-Allow-Origin": "<<YOUR S3 BUCKET URL>>", "Access-Control-Allow-Credentials": "true" }
+'headers': {
+    "Access-Control-Allow-Origin": "<<S3 BUCKET URL>>",
+    "Access-Control-Allow-Credentials": "true"
+}
 {% endhighlight %}
 
 Add these CORS headers in tamplate.yaml as well. Refer to the source code <a href="https://github.com/techsikandar/profile-serverless">here</a>.
 
 {% highlight ruby %}
-Api: Cors: AllowMethods: "'*'" AllowHeaders: "'<<YOUR S3 BUCKET URL>>'" AllowOrigin: "'*'"
+Api:
+  Cors:
+    AllowMethods: "'*'"
+    AllowHeaders: "'<<YOUR S3 BUCKET URL>>'"
+    AllowOrigin: "'*'"
 {% endhighlight %}
 
 `Note: If you see any issue, first try to put “*” in allowed origin to see if it’s working. The try to put correct S3 URL in origin.`
@@ -274,7 +284,7 @@ npm run build
 I used a simple approach to deploy the build to S3, i.e., by syncing up the dist directory to the S3 bucket with this command:
 
 {% highlight ruby %}
-aws s3 sync dist/profile-angular/ s3://<<YOUR_S3_STATIC_WEBSITE_BUCKET_NAME>>
+aws s3 sync dist/profile-angular/ s3://<<S3_STATIC_WEBSITE_BUCKET_NAME>>
 {% endhighlight %}
 
 You are all set now!
@@ -282,7 +292,7 @@ You are all set now!
 By the way, you can also configure the command under the “scripts” section of “package.json”, like this:
 
 {% highlight ruby %}
-"aws-deploy": "aws s3 sync dist/profile-angular/ s3://<<YOUR_S3_STATIC_WEBSITE_BUCKET_NAME>>"
+"aws-deploy": "aws s3 sync dist/profile-angular/ s3://<<S3_STATIC_WEBSITE_BUCKET_NAME>>"
 {% endhighlight %}
 
 And then you can run it simply like this:
