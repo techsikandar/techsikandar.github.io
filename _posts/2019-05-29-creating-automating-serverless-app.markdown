@@ -233,4 +233,64 @@ aws cloudformation create-stack --stack-name profile-serverless-pipeline \
 
 Make changes to the `profile-serverless` project and do git commit & git push. This will trigger the build process. Verify your changes by hitting the API Gateway endpoint.
 
-Continue to read if you want to host your personal profile on S3 bucket with Angular front-end. <br>
+Continue to read if you want to host your personal profile on S3 bucket with Angular front-end. <br><br>
+
+Lets configure the project to create our own single-page serverless application to host your personal profile. It's built with Angular. Code is very basic at the moment. It’s not too optimized and not too flexible. For example, the endpoint is hard-coded. Environments are not configured. No state management. It’s not compiled ahead-of-time. But, it's good for demonstration purpose.
+
+![cicd](/assets/aws/serverless/apig.png){: .center-image }
+
+<h1>{{ "Setup & Configure the Angular application" }}</h1>
+
+Checkout the source code from <a href="https://github.com/techsikandar/profile-serverless-angular">here</a>. Open the project in editor your choice. I used VS Code.
+
+<h1>{{ "API Gateway configuration" }}</h1>
+
+Configure the API Gateway endpoint in ProfileService.ts file. Get the source code from <a href="https://github.com/techsikandar/profile-serverless-angular">here</a>.
+
+<h1>{{ "CORS Configuration" }}</h1>
+
+Add these CORS headers in profileloader.py lambda. Refer to the source code <a href="https://github.com/techsikandar/profile-serverless">here</a>.
+
+{% highlight ruby %}
+'headers': { "Access-Control-Allow-Origin": "<<YOUR S3 BUCKET URL>>", "Access-Control-Allow-Credentials": "true" }
+{% endhighlight %}
+
+Add these CORS headers in tamplate.yaml as well. Refer to the source code <a href="https://github.com/techsikandar/profile-serverless">here</a>.
+
+{% highlight ruby %}
+Api: Cors: AllowMethods: "'*'" AllowHeaders: "'<<YOUR S3 BUCKET URL>>'" AllowOrigin: "'*'"
+{% endhighlight %}
+
+`Note: If you see any issue, first try to put “*” in allowed origin to see if it’s working. The try to put correct S3 URL in origin.`
+
+<h1>{{ "Build & Deployment" }}</h1>
+
+Build the project by running this command. This will create the build artifacts under dist/ directory.
+
+{% highlight ruby %}
+npm run build
+{% endhighlight %}
+
+I used a simple approach to deploy the build to S3, i.e., by syncing up the dist directory to the S3 bucket with this command:
+
+{% highlight ruby %}
+aws s3 sync dist/profile-angular/ s3://<<YOUR_S3_STATIC_WEBSITE_BUCKET_NAME>>
+{% endhighlight %}
+
+You are all set now!
+
+By the way, you can also configure the command under the “scripts” section of “package.json”, like this:
+
+{% highlight ruby %}
+"aws-deploy": "aws s3 sync dist/profile-angular/ s3://<<YOUR_S3_STATIC_WEBSITE_BUCKET_NAME>>"
+{% endhighlight %}
+
+And then you can run it simply like this:
+
+{% highlight ruby %}
+nm run aws-deploy
+{% endhighlight %}
+
+Access your S3 static website bucket and you are good to go.
+
+Thank you for coming this far!
