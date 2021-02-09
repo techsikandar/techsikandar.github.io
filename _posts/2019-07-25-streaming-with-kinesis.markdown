@@ -39,21 +39,21 @@ Amazon Kinesis enables you to ingest, buffer, and process streaming data in real
 
 <h1>{{ "Data Collection with Kinesis" }}</h1>
 
-There are three ways to write producers:
+There are three ways to write producer applications:
 
 <ul>
-<li>AWS SDK</li>
-<li>Kinesis producers library</li>
+<li>AWS SDK (PutRecord / PutRecords)</li>
+<li>Kinesis Producers Library (KPL)</li>
 <li>Kinesis Agent</li>
 </ul>
 
-Let's first create a data stream before going any further with writing producers:
+Let's first create a data stream before going any further:
 
 {% highlight ruby %}
 # aws kinesis create-stream --stream-name TestStream --shard-count 1
 {% endhighlight %}
 
-Create stream is an asynchronous operation. This command will initially return the stream status CREATING which will be changed to ACTIVE when the create stream operation is completed. Sharding is a way to partition the data. It uniquely identifies the data flowing Kinesis and it's base throughput unit for Kinesis data streams. A stream can have many shards but i am just using 1 here.
+Create stream is an asynchronous operation. This command will initially return the stream status CREATING which will be changed to ACTIVE when the create stream operation is completed. Sharding is a way to partition the data. It uniquely identifies the data flowing to Kinesis and it's base throughput unit for Kinesis data streams. A stream can have many shards, and there are some guidelines on how many shards we should have but for start let's just create one.
 
 {% highlight ruby %}
 # aws kinesis describe-stream --stream-name TestStream
@@ -62,7 +62,7 @@ Create stream is an asynchronous operation. This command will initially return t
 
 <h1>{{ "AWS SDK (PutRecord / PutRecords)" }}</h1>
 
-I am using CLI but there's a corresponding SDK API as well.
+This CLI internally uses AWS SDK. Offcourse, you can directly use AWS SDK as well.
 
 {% highlight ruby %}
 # aws kinesis put-record --stream-name TestStream --partition-key 001 --data "Hello World 1"
@@ -100,7 +100,7 @@ The partition key is used by Kinesis data streams to distribute the data across 
 }
 {% endhighlight %}
 
-You can base 64 decode the data to view the actual data which you sent. 
+Decode the data to view the actual data that was sent to Kinesis: 
 
 {% highlight ruby %}
 # echo "SGVsbG8gV29ybGQgMQ=="| base64 -d
@@ -124,14 +124,14 @@ KPL is an abstraction over AWS Kinesis SDK. It batches & aggregates the user rec
 
 <h1>{{ "Kinesis Agent" }}</h1>
 
-I am installing Kinesis Agent on EC2 instance. It can be installed on premise as well. Create EC2 role "EC2Kinesis" with Admin access. Launch an EC2 instance and attached this role.
+Let's install Kinesis Agent on the EC2 instance. It can be installed on-premise as well. Create an appropriate EC2 role ("EC2Kinesis") with appropriate access (Admin for testing). Launch an EC2 instance and attached this role.
 
 {% highlight ruby %}
 # sudo yum install –y aws-kinesis-agent
 # sudo yum install –y https://s3.amazonaws.com/streaming-data-agent/aws-kinesis-agent-latest.amzn1.noarch.rpm
 {% endhighlight %}
 
-I used 120 years of Olympics history from Kaggle and downloaded it under /var/log/olympics. Create a Kinesis data stream and make sure it's ready.
+For the article, I copied 120 years of Olympics history from Kaggle and downloaded it under /var/log/olympics. Create a Kinesis data stream and make sure it's ready.
 
 {% highlight ruby %}
 # aws kinesis create-stream --stream-name OlympicStream --shard-count 1
@@ -159,7 +159,7 @@ Edit the file /etc/aws-kinesis/agent.json and make these changes.
 }
 {% endhighlight %}
 
-Start the kinesis agent and tail the logs.
+Start the kinesis agent and tail the logs:
 
 {% highlight ruby %}
 # sudo service aws-kinesis-agent start
@@ -168,4 +168,4 @@ Start the kinesis agent and tail the logs.
 
 <h1>{{ "Conclusion" }}</h1>
 
-I prefer using KPL because it improves throughput and provides retry mechanism. The fact that it batches the records before sending to Kinesis may introduce delay of up to RecordMaxBufferedTime. This can be configured. If you do not want this delay then you can use PutRecord(s) API. Kinesis Agent i think is obvious. Use it in cases where you have a continuous feed of data in a file and you want to send this data as it's arriving. You can optionally perform data transformation.
+I prefer using KPL because it improves throughput and provides retry mechanism. The fact that it batches the records before sending to Kinesis may introduce delay of up to RecordMaxBufferedTime. This can be configured. If you do not want this delay then you can use PutRecord(s) API. Kinesis Agent obviously can be used in cases where we have a continuous feed of data in a file and we want to send this data as it's arriving. You can optionally perform data transformation as well.
