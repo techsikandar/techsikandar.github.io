@@ -1,0 +1,52 @@
+---
+layout: post
+title:  "HBase - An introduction"
+date:   2021-02-18 19:11:10 -0500
+categories: bigdata
+---
+
+Apache HBase is an open source, `key-value distributed database` built on top of HDFS and modeled around Google Bigtable. It is an ideal choice for applications 
+that need fast random access to very large amounts of data (billions of rows X millions of columns)
+
+<ul>
+    <li>Linear and modular scalability</li>
+    <li>Strongly consistent reads and writes, thanks to ZooKeeper</li>
+    <li>Automatic and configurable sharding of tables</li>
+    <li>Automatic failover support between RegionServers</li>
+</ul>
+
+Refer to <a href="http://khansikandar.com/bigdata/2021/02/18/hfile.html" target="_blank">HFile</a> to see how HBase supports random read/write.
+
+<h1>{{ "HBase Data Model Terminologies" }}</h1>
+
+<ul>
+    <li>Table - consists of multiple rows</li>
+    <li>Row - consists of a row key and one or more columns (column family) with values associated with them. Rows are stored alphabetically by the row key</li>
+    <li>Column - consists of a column family and a column qualifier, which are delimited by a : (colon) character</li>
+    <li>Column Family - groups a set of columns and their values. They are defined at the creation time. Each column family has its own storage properties like data compression, row key encoding, caching, etc</li>
+    <li>Column Qualifier - is used to represent the data within a column family</li>
+    <li>Cell - is a unique combination of row, column family, and column qualifier. It contains a value and a timestamp.</li>
+    <li>Timestamp - Values written in a cell are versioned with the timestamp.  A timestamp is written alongside each value, and is the identifier for a given version of a value. By default, the timestamp represents the time on the RegionServer when the data was written, but you can specify a different timestamp value when you put data into the cell.</li>
+</ul>
+
+<h1>{{ "HBase Storage Internals" }}</h1>
+
+<ul>
+    <li>Regions - Table will be split into Regions based on rows' lexicographical order such that all keys within regions start and end keys are stored in the same region</li>
+    <li>RegionServers - Regions are serrved by Region Server. Regions are distributed across the cluster, requests from client can be processed by RegionServer process independently</li>
+    <li>Store - A Store corresponds to a column family for a table for a given region. A Store hosts a MemStore and 0 or more StoreFiles (HFiles). The MemStore holds in-memory modifications to the Store. When the MemStore reaches a given size (hbase.hregion.memstore.flush.size), it flushes its contents to a StoreFile. StoreFiles are where your data lives</li>
+</ul>
+
+![hbase-arch-1](/assets/bigdata/hbase-arch-1.jpg)
+
+<h1>{{ "Think about" }}</h1>
+
+<ul>
+    <li>Row key structure<li>
+    <li>Think about the read & write access patterns because tables are sorted based upon row keys<li>
+    <li>How many column families are required? and what we will store in each column family?<li>
+    <li>Decide what column qualifiers you will need?  You don't need qualifiers at table creation time but it's good to think about them beforehand<li>
+    <li>How many columns are required?<li>
+    <li>What will you store in each cell?<li>
+    <li>Do you need versioning? If yes, roughly how many versions should you stored?<li>
+</ul>
