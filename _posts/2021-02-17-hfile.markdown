@@ -1,0 +1,28 @@
+---
+layout: post
+title:  "HFile - storage overview"
+date:   2021-02-17 21:13:27 -0500
+categories: bigdata
+---
+
+HFile is `byte array based key/value` file format for HBase. HBase initially started with MapFile but then moved to HFile version 1 and then to HFile version 2. My main focus here is to explain the storage engine behind HFile because HFile is just a file format which HBase will use to store the data in the underlying storage. Let's talk about how the underlying storage engine is designed. There are two types of storage engines: `log-structured` and `page-oriented (B-trees)`. In this article, We will focus on log-structure storage engine. 
+
+log-structured is an `append-only` sequence of data. In case of HFile, it's an append-only sequence of key/value entries. This way the writes are faster both on magnetic and solid-state disks. This structure has to be immutable because random write/delete/update will be an IO intensive task. Specially in case of big data where we we will be story terabytes & petabytes of data. Making it immutable will also keep the data consistent in case of any write failure.
+
+How about reads? Are we going to scan the whole log-structured file for our read requests? Let's have an `index data structure` as a map/dictionary along with it to store the data key & offset (location where the value will be found in log-structure data file). This will improve the read requests because with the key & offset we will jump directly to the data offset in log-structured file and also enabling random access. Now that we are introducing another data structure, we also have to think about some trade-offs. This index structure is built from the main log-structured data which means every write in this data will generate another write for index and which means writes could be slow. If the system which we are building is write intensive then we need to think about our storage strategy or carefully select which keys to index. 
+
+<h1>{{ "Question: where do we store the index? in memory or on disk?" }}</h1>
+
+Say we store our indexes in memory. What will happen when the index size increases and we don't have enough memory to store new indexes. This can be solved by `flushing` the indexes (in segments) to disk whenever the memory reaches a particular size limit. But what if we run out of disk space? This may happen too specially when we are talking about petabyte scale data. This can be solved by `comptacting` the disk. One approach to compaction is to remove duplicate keys and keep the most recent change to that key. These segments can even merged together. Both the compating and merge process will result in a new segment file because each log-structured data is immutable. The process should not block the ongoing read and write requests, i.e., it has to be done in a separate thread.
+
+Searching an index key in this structure is still an expansive I/O operation. `SSTables` solves this. 
+
+<h1>{{ "SSTables and LSM-Trees" }}</h1>
+
+We know each log-structured segment is a sequence of key-value entries. Let's make sure these key-value entries are sorted by key. This is called Sorted String Table, or SSTable. There are tree data structures like `red-black trees` or `AVL trees` where we can insert the key in random order and read them back in sorted order. Once we have that, we can apply merge sort to merge the segments and apply binary search to search a single key or a range of keys. This in-memory tree is called `memstore` in HBase and it's called `memtable` in BigTable. Once this in-memory tree is full, we write it to the SSTable based `segment file`. 
+
+These are also caled LSM-Trees (log-structred merge-tree) because this involves compacting and merging.
+
+Any read request will be first served from the in-memory tree and then from the disk. But what if the key does not exist at all? All of our reads will be wasted. Use `bloom filters`. It's another data structure which will tell us if a particular key exists or not. 
+
+`Size-tiered` and `leveled` compaction are the two strategies for compation and merging. In size-tiered, newer and smaller SSTables are mergedd into older and larger SSTables. In leveled compaction, the key range is split up into smaller SSTables and older data is moved into separate “levels,” which allows the compaction to proceed more incrementally and use less disk space. HBase uses size-tiered. RockDB & LevelDB uses leveled compaction. Cassandra uses both.
