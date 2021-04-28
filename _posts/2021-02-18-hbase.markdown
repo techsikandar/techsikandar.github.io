@@ -42,11 +42,11 @@ Refer to <a href="http://khansikandar.com/bigdata/2021/02/18/hfile.html" target=
 <h1>{{ "Think about" }}</h1>
 
 <ul>
-    <li>Row key structure<li>
-    <li>Think about the read & write access patterns because tables are sorted based upon row keys<li>
-    <li>How many column families are required? and what we will store in each column family?<li>
-    <li>Decide what column qualifiers you will need?  You don't need qualifiers at table creation time but it's good to think about them beforehand<li>
-    <li>How many columns are required?<li>
-    <li>What will you store in each cell?<li>
-    <li>Do you need versioning? If yes, roughly how many versions should you stored?<li>
+    <li>Row key structure</li>
+    <li>Think about the read & write access patterns because tables are sorted based upon row keys</li>
+    <li>How many column families are required? and what we will store in each column family?</li>
+    <li>Decide what column qualifiers you will need?  You don't need qualifiers at table creation time but it's good to think about them beforehand</li>
+    <li>How many columns are required?</li>
+    <li>What will you store in each cell?</li>
+    <li>Do you need versioning? If yes, roughly how many versions should you stored?</li>
 </ul>
